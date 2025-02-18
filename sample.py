@@ -1,25 +1,31 @@
 from saxonche import *
 
-with PySaxonProcessor(license=False) as proc:
-    print("SaxonC Sample in Python")
-    print(proc.version)
-    # print(dir(proc))
-    xdmAtomicval = proc.make_boolean_value(False)
+# XML dosyasını dışarıdan oku
+def read_xml_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
 
-    xsltproc = proc.new_xslt30_processor()
-    outputi = xsltproc.transform_to_string(source_file="cat.xml", stylesheet_file="test.xsl")
-    print("Test1 =", outputi)
-    document = proc.parse_xml(xml_text="<out><person>text1</person><person>text2</person><person>text3</person></out>")
+# XSLT ile validation işlemi
+def validate_xml_with_xslt(xml_file_path, xslt_file_path):
+    with PySaxonProcessor(license=False) as proc:
+        xsltproc = proc.new_xslt30_processor()  # XSLT 3.0 işlemciyi başlatıyoruz
 
-    executable = xsltproc.compile_stylesheet(
-        stylesheet_text="<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='2.0'> <xsl:param name='values' select='(2,3,4)' /><xsl:output method='xml' indent='yes' /><xsl:template name='main'><output><xsl:value-of select='//person[1]'/><xsl:for-each select='$values' ><out><xsl:value-of select='. * 3'/></out></xsl:for-each></output></xsl:template></xsl:stylesheet>")
-    if (executable == None):
-        print('Executable is None\n')
-        if (xsltproc.exception_occurred):
-            print("Error message:" + xsltproc.error_message)
-            exit()
-    executable.set_global_context_item(xdm_item=document)
+        # Dışarıdan XML dosyasını yükle
+        xml_text = read_xml_file(xml_file_path)
+        document = proc.parse_xml(xml_text=xml_text)
 
-    output2 = executable.call_template_returning_string("main")
-    print(output2)
+        # Validation XSLT dosyasını derle
+        executable = xsltproc.compile_stylesheet(stylesheet_file=xslt_file_path)
 
+        # XSLT dönüşümünü gerçekleştir ve çıktı al
+        output = executable.transform_to_string(xdm_node=document)
+
+        # Çıktıyı yazdır
+        print(output)
+
+# XML ve XSLT dosyalarının yolları
+xml_file_path = 'input.xml'  # Dışarıdan alınacak XML dosyasının yolu
+xslt_file_path = 'schematron.xslt'  # XSLT dosyasının yolu
+
+# XML dosyasını XSLT ile doğrulama işlemi yap
+validate_xml_with_xslt(xml_file_path, xslt_file_path)

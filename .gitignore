@@ -1,0 +1,41 @@
+# Python cache dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment (venv)
+venv/
+.env
+*.env
+
+# Bağımlılıklar
+pip-log.txt
+pip-delete-this-directory.txt
+Pipfile
+Pipfile.lock
+
+# IDE ve Editör dosyaları
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# Log ve Debug dosyaları
+logs/
+*.log
+
+# Çalışma dosyaları
+*.sqlite3
+*.db
+instance/
+
+# Docker dosyaları (Eğer Docker kullanıyorsan)
+docker-compose.override.yml
+.dockerignore
+
+# FastAPI spesifik
+__pypackages__/
+.openapi.json
+
